@@ -37,4 +37,19 @@ public class DatabaseHelper {
             );
         }
     }
+
+    public static String getUserStatus(String login) throws SQLException {
+        var runner = new QueryRunner();
+
+        String sql = "SELECT status FROM users WHERE login = ?";
+
+        try (var connection = getConnection()) {
+            return runner.query(
+                    connection,
+                    sql,
+                    new ScalarHandler<>(),
+                    login
+            );
+        }
+    }
 }
