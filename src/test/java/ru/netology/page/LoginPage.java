@@ -2,6 +2,7 @@ package ru.netology.page;
 
 import com.codeborne.selenide.SelenideElement;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selectors.by;
 import static com.codeborne.selenide.Condition.visible;
@@ -26,11 +27,9 @@ public class LoginPage {
         loginButton.click();
     }
 
-    public String getErrorNotification() {
-        return errorNotification.getText();
-    }
-
-    public void waitForError() {
-        errorNotification.shouldBe(visible);
+    public void verifyErrorNotification(String expectedText) {
+        errorNotification
+                .shouldBe(visible)
+                .shouldHave(text(expectedText));
     }
 }

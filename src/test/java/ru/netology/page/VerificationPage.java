@@ -2,6 +2,8 @@ package ru.netology.page;
 
 import com.codeborne.selenide.SelenideElement;
 
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selectors.by;
 
@@ -21,7 +23,9 @@ public class VerificationPage {
         verifyButton.click();
     }
 
-    public String getErrorNotification() {
-        return errorNotification.getText();
+    public void verifyErrorNotification(String expectedText) {
+        errorNotification
+                .shouldBe(visible)
+                .shouldHave(text(expectedText));
     }
 }

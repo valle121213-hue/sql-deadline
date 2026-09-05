@@ -52,4 +52,26 @@ public class DatabaseHelper {
             );
         }
     }
+
+    public static void cleanDatabase() throws SQLException {
+        var runner = new QueryRunner();
+
+        try (var connection = getConnection()) {
+            runner.update(connection, "DELETE FROM card_transactions");
+            runner.update(connection, "DELETE FROM auth_codes");
+            runner.update(connection, "DELETE FROM cards");
+            runner.update(connection, "DELETE FROM users");
+        }
+    }
+
+    public static void setUserActive(String login) throws SQLException {
+        var runner = new QueryRunner();
+
+        String sql = "UPDATE users SET status = 'active' WHERE login = ?";
+
+        try (var connection = getConnection()) {
+            runner.update(connection, sql, login);
+        }
+    }
+
 }

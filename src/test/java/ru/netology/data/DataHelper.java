@@ -1,23 +1,15 @@
 package ru.netology.data;
 
+import lombok.Value;
+
+import java.util.UUID;
+
 public class DataHelper {
 
+    @Value
     public static class AuthInfo {
-        private final String login;
-        private final String password;
-
-        public AuthInfo(String login, String password) {
-            this.login = login;
-            this.password = password;
-        }
-
-        public String getLogin() {
-            return login;
-        }
-
-        public String getPassword() {
-            return password;
-        }
+        String login;
+        String password;
     }
 
     public static AuthInfo getAuthInfo() {
@@ -25,6 +17,10 @@ public class DataHelper {
                 "vasya",
                 "qwerty123"
         );
+    }
+
+    public static String generateRandomPassword() {
+        return UUID.randomUUID().toString();
     }
 }
 
