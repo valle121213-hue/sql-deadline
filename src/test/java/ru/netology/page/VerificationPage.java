@@ -18,6 +18,15 @@ public class VerificationPage {
     private final SelenideElement errorNotification =
             $(by("data-test-id", "error-notification"));
 
+    public VerificationPage() {
+        codeField.shouldBe(visible);
+    }
+
+    public DashboardPage validVerify(String verificationCode) {
+        verify(verificationCode);
+        return new DashboardPage();
+    }
+
     public void verify(String code) {
         codeField.setValue(code);
         verifyButton.click();

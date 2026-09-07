@@ -18,7 +18,7 @@ public class DataHelper {
                 "qwerty123"
         );
     }
-
+// Генерация случайного неверного пароля
     public static String generateRandomPassword() {
         return UUID.randomUUID().toString();
     }

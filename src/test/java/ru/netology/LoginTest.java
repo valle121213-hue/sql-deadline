@@ -1,13 +1,13 @@
 package ru.netology;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.data.DataHelper;
 import ru.netology.db.DatabaseHelper;
+import ru.netology.page.DashboardPage;
 import ru.netology.page.LoginPage;
 import ru.netology.page.VerificationPage;
-import ru.netology.page.DashboardPage;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.SQLException;
 
@@ -16,10 +16,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class LoginTest {
+    private LoginPage loginPage;
 
     @BeforeEach
     void setUp() throws SQLException {
-        DatabaseHelper.setUserActive(DataHelper.getAuthInfo().getLogin());
+        DatabaseHelper.setUserActive(
+                DataHelper.getAuthInfo().getLogin()
+        );
+
+        loginPage = open(
+                "http://localhost:9999",
+                LoginPage.class
+        );
     }
 
     @AfterAll
@@ -31,50 +39,44 @@ public class LoginTest {
     void shouldLoginSuccessfully() throws SQLException {
         var authInfo = DataHelper.getAuthInfo();
 
-        open("http://localhost:9999");
-
-        var loginPage = new LoginPage();
-        loginPage.login(authInfo.getLogin(), authInfo.getPassword());
+        var verificationPage = loginPage.validLogin(authInfo);
 
         var verificationCode =
                 DatabaseHelper.getVerificationCode(authInfo.getLogin());
 
-        assertNotNull(verificationCode);
+        assertNotNull(
+                verificationCode,
+                "Код подтверждения не найден в базе данных"
+        );
 
-        var verificationPage = new VerificationPage();
-        verificationPage.verify(verificationCode);
+        var dashboardPage =
+                verificationPage.validVerify(verificationCode);
 
-        var dashboardPage = new DashboardPage();
         dashboardPage.verifyDashboardVisible();
-
     }
-
 
     @Test
     void shouldBlockUserAfterThreeInvalidPasswords() throws SQLException {
         var authInfo = DataHelper.getAuthInfo();
         var wrongPassword = DataHelper.generateRandomPassword();
 
-        open("http://localhost:9999");
-
-        var loginPage = new LoginPage();
-
-        System.out.println("До попыток: " +
-                DatabaseHelper.getUserStatus(authInfo.getLogin()));
-
-        // Первая неправильная попытка
         loginPage.login(authInfo.getLogin(), wrongPassword);
-        loginPage.verifyErrorNotification("Ошибка! Неверно указан логин или пароль");
+        loginPage.verifyErrorNotification(
+                "Ошибка! Неверно указан логин или пароль"
+        );
 
-        // Вторая неправильная попытка
         loginPage.login(authInfo.getLogin(), wrongPassword);
-        loginPage.verifyErrorNotification("Ошибка! Неверно указан логин или пароль");
+        loginPage.verifyErrorNotification(
+                "Ошибка! Неверно указан логин или пароль"
+        );
 
-        // Третья неправильная попытка
         loginPage.login(authInfo.getLogin(), wrongPassword);
-        loginPage.verifyErrorNotification("Ошибка! Неверно указан логин или пароль");
+        loginPage.verifyErrorNotification(
+                "Ошибка! Неверно указан логин или пароль"
+        );
 
-        var status = DatabaseHelper.getUserStatus(authInfo.getLogin());
+        var status =
+                DatabaseHelper.getUserStatus(authInfo.getLogin());
 
         assertEquals(
                 "blocked",
@@ -82,5 +84,4 @@ public class LoginTest {
                 "Фактический статус пользователя: " + status
         );
     }
-
 }
